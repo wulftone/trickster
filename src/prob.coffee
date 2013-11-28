@@ -50,13 +50,24 @@ validPartitions =
 
 
 ###
+Utility function to detect presence of an Array
+###
+isArray = (obj) ->
+    Object.prototype.toString.call(obj) == '[object Array]'
+
+
+###
 Calculate the partition probability
 
-@param arguments [Integer]
+@param arguments [Integer, Array]
 @return [Decimal]
 ###
 partitionProbability = () ->
-  args = Array.prototype.slice.call arguments
+  if isArray arguments[0]
+    args = arguments[0]
+  else
+    args = Array.prototype.slice.call arguments
+
   key = args.toString()
 
   throw new Error 'Not a valid partition!' unless validPartitions.hasOwnProperty key
@@ -75,9 +86,14 @@ partitionProbability = () ->
   validPartitions[key] = numerator / denominator
 
 
+###
+Calculate all the probabilities for the valid partitions
+###
 probs = () ->
-  partitions.map (p) ->
-    100 * partitionProbability p
+  for partition, value of validPartitions
+    partitionProbability eval("[#{partition}]")
+
+  validPartitions
 
 
 # Choose which functions we want to be public

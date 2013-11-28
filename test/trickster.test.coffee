@@ -16,3 +16,10 @@ describe 'prob#partitionProbability', ->
 
   it 'should throw an error when trying to access an invalid partition', ->
     assert.throws (-> prob.partitionProbability 0), /partition/
+
+
+describe 'prob#probs', ->
+
+
+  it 'should calculate all of the partitions', ->
+    console.log prob.probs()
