@@ -74,11 +74,13 @@ partitionProbability = () ->
 
   # Don't re-calculate unless we have to
   return validPartitions[key] if validPartitions[key]
+  handSize = 13
+  deckSize = 52
 
-  denominator = bc 52, 13
+  denominator = bc deckSize, handSize
 
   numerator = args.map (e) ->
-    bc 13, e
+    bc handSize, e
 
   .reduce (a, b) ->
     a * b
@@ -87,11 +89,26 @@ partitionProbability = () ->
 
 
 ###
+Just verifies that the hand size is 13.  Throws an error if it is not.
+
+@param hand [Array] The hand, (e.g. [5, 3, 3, 2])
+###
+verifyHandSize = (hand) ->
+  handSize = hand.reduce (a, b) ->
+    a + b
+
+  throw new Error 'Hand size must be 13 cards!' unless handSize == 13
+
+
+
+###
 Calculate all the probabilities for the valid partitions
 ###
 probs = () ->
   for partition, value of validPartitions
-    partitionProbability eval("[#{partition}]")
+    hand = eval "[#{partition}]"
+    verifyHandSize hand
+    partitionProbability hand
 
   validPartitions
 
