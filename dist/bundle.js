@@ -198,7 +198,20 @@ Prob = {
 module.exports = Prob;
 
 
-},{"./binomial_coefficient.coffee":1}]},{},[3])
-(3)
+},{"./binomial_coefficient.coffee":1}],4:[function(require,module,exports){
+var Trickster, prob;
+
+prob = require('./prob.coffee');
+
+Trickster = function(el) {
+  console.log(el);
+  return console.log(prob.probs());
+};
+
+module.exports = Trickster;
+
+
+},{"./prob.coffee":3}]},{},[4])
+(4)
 });
 ;

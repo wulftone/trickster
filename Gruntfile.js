@@ -20,14 +20,22 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      files: ['**/*'],
-      tasks: ['mochaTest'],
+      scripts: {
+        files: ['src/**/*.coffee','test/**/*.coffee'],
+        tasks: ['mochaTest', 'browserify'],
+      },
+      example: {
+        files: ['dist/*.js','example/*.html','Gruntfile.js'],
+        options: {
+          livereload: true
+        }
+      }
     },
 
     browserify: {
       dist: {
         files: {
-          'dist/bundle.js': ['src/prob.coffee'],
+          'dist/bundle.js': ['src/trickster.coffee'],
         },
         options: {
           transform: ['coffeeify'],
