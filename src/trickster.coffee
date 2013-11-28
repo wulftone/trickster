@@ -8,21 +8,47 @@ Creates the table and inserts it into the given element (selected by element id)
 @return [Trickster]
 ###
 Trickster = (elementName) ->
-
   container = document.getElementById elementName
-  probabilities = prob.calculateProbabilities()
-
-  table = document.createElement 'table'
-  tr = createTableRow 'Partition', 'Probability (%)', 'th'
-  table.appendChild tr
-
-  for partition, prob of probabilities
-    percent = Math.floor(10000 * prob) / 100 # Floored to two decmials
-    tr = createTableRow partition, percent
-    table.appendChild tr
-
+  table = createProbabilitiesTable prob.calculateProbabilities()
   container.appendChild table
   @
+
+
+###
+Creates a two-column table based on the given object.
+
+@param probabilities [Object] e.g. {"5,3,3,2": 0.15, ...}
+
+@return [DOMElement] The table element
+###
+createProbabilitiesTable = (probabilities) ->
+  p = {}
+
+  for partition, probability of probabilities
+    p[partition] = Math.floor(10000 * probability) / 100 # Floored to two decmials
+
+  table = createTable ['Partition', 'Probability (%)'], p
+
+
+
+###
+Creates a two-column table.
+
+@param headers [Array<String>] An Array that contains two strings to be used as column titles in the table
+@param rows [Object] A basic Object whose keys will be the first column, and values the second column in the table
+
+@return [DOMElement] The table element
+###
+createTable = (headers, rows) ->
+  table = document.createElement 'table'
+  headerRow = createTableRow headers[0], headers[1], 'th'
+  table.appendChild headerRow
+
+  for k, v of rows
+    tr = createTableRow k, v
+    table.appendChild tr
+
+  table
 
 
 ###

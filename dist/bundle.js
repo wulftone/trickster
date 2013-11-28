@@ -199,7 +199,7 @@ module.exports = Prob;
 
 
 },{"./binomial_coefficient.coffee":1}],4:[function(require,module,exports){
-var Trickster, createTableRow, prob;
+var Trickster, createProbabilitiesTable, createTable, createTableRow, prob;
 
 prob = require('./prob.coffee');
 
@@ -213,20 +213,53 @@ Creates the table and inserts it into the given element (selected by element id)
 
 
 Trickster = function(elementName) {
-  var container, partition, percent, probabilities, table, tr;
+  var container, table;
   container = document.getElementById(elementName);
-  probabilities = prob.calculateProbabilities();
-  table = document.createElement('table');
-  tr = createTableRow('Partition', 'Probability (%)', 'th');
-  table.appendChild(tr);
-  for (partition in probabilities) {
-    prob = probabilities[partition];
-    percent = Math.floor(10000 * prob) / 100;
-    tr = createTableRow(partition, percent);
-    table.appendChild(tr);
-  }
+  table = createProbabilitiesTable(prob.calculateProbabilities());
   container.appendChild(table);
   return this;
+};
+
+/*
+Creates a two-column table based on the given object.
+
+@param probabilities [Object] e.g. {"5,3,3,2": 0.15, ...}
+
+@return [DOMElement] The table element
+*/
+
+
+createProbabilitiesTable = function(probabilities) {
+  var p, partition, probability, table;
+  p = {};
+  for (partition in probabilities) {
+    probability = probabilities[partition];
+    p[partition] = Math.floor(10000 * probability) / 100;
+  }
+  return table = createTable(['Partition', 'Probability (%)'], p);
+};
+
+/*
+Creates a two-column table.
+
+@param headers [Array<String>] An Array that contains two strings to be used as column titles in the table
+@param rows [Object] A basic Object whose keys will be the first column, and values the second column in the table
+
+@return [DOMElement] The table element
+*/
+
+
+createTable = function(headers, rows) {
+  var headerRow, k, table, tr, v;
+  table = document.createElement('table');
+  headerRow = createTableRow(headers[0], headers[1], 'th');
+  table.appendChild(headerRow);
+  for (k in rows) {
+    v = rows[k];
+    tr = createTableRow(k, v);
+    table.appendChild(tr);
+  }
+  return table;
 };
 
 /*
