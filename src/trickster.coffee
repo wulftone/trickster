@@ -1,5 +1,6 @@
 prob = require './prob.coffee'
 
+
 ###
 Creates the table and inserts it into the given element (selected by element id)
 
@@ -28,7 +29,6 @@ createProbabilitiesTable = (probabilities) ->
     p[partition] = Math.floor(10000 * probability) / 100 # Floored to two decmials
 
   table = createTable ['Partition', 'Probability (%)'], p
-
 
 
 ###

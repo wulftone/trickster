@@ -18,7 +18,7 @@ describe 'prob#partitionProbability', ->
     assert.throws (-> prob.partitionProbability 0), /partition/
 
 
-describe 'prob#probs', ->
+describe 'prob#calculateProbabilities', ->
 
 
   it 'should calculate all of the partitions', ->
