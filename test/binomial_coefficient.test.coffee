@@ -17,6 +17,7 @@ describe 'binomial_coefficient', ->
     assert.equal bc(16, 8), 12870
     assert.equal bc(52, 13), 635013559600
 
+
   it 'should satisfy the identity theorem for binomial coefficients (n k) == (n (n - k))', ->
     identity = (n, k) ->
       assert.equal bc(n, k), bc(n, (n - k))
