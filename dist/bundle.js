@@ -199,7 +199,7 @@ module.exports = Prob;
 
 
 },{"./binomial_coefficient.coffee":1}],4:[function(require,module,exports){
-var Trickster, prob;
+var Trickster, createTableRow, prob;
 
 prob = require('./prob.coffee');
 
@@ -217,12 +217,12 @@ Trickster = function(elementName) {
   container = document.getElementById(elementName);
   probabilities = prob.calculateProbabilities();
   table = document.createElement('table');
-  tr = this.createTableRow('Partition', 'Probability (%)', 'th');
+  tr = createTableRow('Partition', 'Probability (%)', 'th');
   table.appendChild(tr);
   for (partition in probabilities) {
     prob = probabilities[partition];
     percent = Math.floor(10000 * prob) / 100;
-    tr = this.createTableRow(partition, percent);
+    tr = createTableRow(partition, percent);
     table.appendChild(tr);
   }
   container.appendChild(table);
@@ -238,7 +238,7 @@ Creates a two-column `tr` element with the given contents.
 */
 
 
-Trickster.prototype.createTableRow = function(column1Text, column2Text, columnType) {
+createTableRow = function(column1Text, column2Text, columnType) {
   var td1, td2, tr;
   if (columnType == null) {
     columnType = 'td';
@@ -251,6 +251,10 @@ Trickster.prototype.createTableRow = function(column1Text, column2Text, columnTy
   tr.appendChild(td1);
   tr.appendChild(td2);
   return tr;
+  /*
+  Trickster constructor starts here
+  */
+
 };
 
 module.exports = Trickster;
