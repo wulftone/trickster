@@ -2,7 +2,7 @@
 This module does the math trickster needs to operate
 ###
 
-bc = require './binomial_coefficient'
+bc = require './binomial_coefficient.coffee'
 
 ###
 These are the partitions we care about for now, there should be 39 of them
@@ -122,8 +122,4 @@ Prob =
   validPartitions: validPartitions
 
 
-if typeof exports != 'undefined'
-  module.exports = Prob
-else
-  @Trickster ||= {}
-  @Trickster.Prob = Prob
+module.exports = Prob

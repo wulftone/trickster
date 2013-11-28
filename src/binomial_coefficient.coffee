@@ -1,4 +1,4 @@
-factorial = require './factorial'
+factorial = require './factorial.coffee'
 
 ###
 Calculate binomial coefficients.  Also known as "n choose k".
@@ -15,7 +15,4 @@ binomialCoefficient = (n, k) ->
   Math.floor( factorial(n) / ( factorial(k) * factorial(n - k) ) )
 
 
-if typeof exports != 'undefined'
-  module.exports = binomialCoefficient
-else
-  Math.binomialCoefficient = binomialCoefficient
+module.exports = binomialCoefficient

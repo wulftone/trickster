@@ -24,8 +24,4 @@ memo = [1, 1]
 # Expose the memo so we can see our saved values
 factorial.memo = memo
 
-# Export for nodejs, or add to Math object for browser
-if typeof exports != "undefined"
-  module.exports = factorial
-else
-  Math.factorial = factorial
+module.exports = factorial
