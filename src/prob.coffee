@@ -64,13 +64,15 @@ Calculate the partition probability
 ###
 partitionProbability = () ->
   if isArray arguments[0]
-    args = arguments[0]
+    hand = arguments[0]
   else
-    args = Array.prototype.slice.call arguments
+    hand = Array.prototype.slice.call arguments
 
-  key = args.toString()
+  key = hand.toString()
 
   throw new Error 'Not a valid partition!' unless validPartitions.hasOwnProperty key
+
+  verifyHandSize hand
 
   # Don't re-calculate unless we have to
   return validPartitions[key] if validPartitions[key]
@@ -79,7 +81,7 @@ partitionProbability = () ->
 
   denominator = bc deckSize, handSize
 
-  numerator = args.map (e) ->
+  numerator = hand.map (e) ->
     bc handSize, e
 
   .reduce (a, b) ->
