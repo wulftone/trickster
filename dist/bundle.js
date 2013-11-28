@@ -62,7 +62,7 @@ module.exports = factorial;
 This module does the math trickster needs to operate
 */
 
-var Prob, bc, isArray, partitionProbability, probs, validPartitions, verifyHandSize;
+var Prob, bc, calculateProbabilities, isArray, partitionProbability, validPartitions, verifyHandSize;
 
 bc = require('./binomial_coefficient.coffee');
 
@@ -178,7 +178,7 @@ Calculate all the probabilities for the valid partitions
 */
 
 
-probs = function() {
+calculateProbabilities = function() {
   var hand, partition, value;
   for (partition in validPartitions) {
     value = validPartitions[partition];
@@ -191,7 +191,7 @@ probs = function() {
 
 Prob = {
   partitionProbability: partitionProbability,
-  probs: probs,
+  calculateProbabilities: calculateProbabilities,
   validPartitions: validPartitions
 };
 
@@ -203,9 +203,54 @@ var Trickster, prob;
 
 prob = require('./prob.coffee');
 
-Trickster = function(el) {
-  console.log(el);
-  return console.log(prob.probs());
+/*
+Creates the table and inserts it into the given element (selected by element id)
+
+@param elementName [String] The id of the Trickster container
+
+@return [Trickster]
+*/
+
+
+Trickster = function(elementName) {
+  var container, partition, percent, probabilities, table, tr;
+  container = document.getElementById(elementName);
+  probabilities = prob.calculateProbabilities();
+  table = document.createElement('table');
+  tr = this.createTableRow('Partition', 'Probability (%)', 'th');
+  table.appendChild(tr);
+  for (partition in probabilities) {
+    prob = probabilities[partition];
+    percent = Math.floor(10000 * prob) / 100;
+    tr = this.createTableRow(partition, percent);
+    table.appendChild(tr);
+  }
+  container.appendChild(table);
+  return this;
+};
+
+/*
+Creates a two-column `tr` element with the given contents.
+
+@param column1Text [String] The text to enter into the leftmost column
+@param column2Text [String] The text to enter into the rightmost column
+@param columnType  [String] (default: 'td') The type of column (e.g. `th` or `td`)
+*/
+
+
+Trickster.prototype.createTableRow = function(column1Text, column2Text, columnType) {
+  var td1, td2, tr;
+  if (columnType == null) {
+    columnType = 'td';
+  }
+  tr = document.createElement('tr');
+  td1 = document.createElement(columnType);
+  td2 = document.createElement(columnType);
+  td1.textContent = column1Text;
+  td2.textContent = column2Text;
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  return tr;
 };
 
 module.exports = Trickster;

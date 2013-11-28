@@ -106,7 +106,7 @@ verifyHandSize = (hand) ->
 ###
 Calculate all the probabilities for the valid partitions
 ###
-probs = () ->
+calculateProbabilities = () ->
   for partition, value of validPartitions
     hand = eval "[#{partition}]"
     verifyHandSize hand
@@ -118,7 +118,7 @@ probs = () ->
 # Choose which functions we want to be public
 Prob =
   partitionProbability: partitionProbability
-  probs: probs
+  calculateProbabilities: calculateProbabilities
   validPartitions: validPartitions
 
 

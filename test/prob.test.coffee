@@ -22,4 +22,4 @@ describe 'prob#probs', ->
 
 
   it 'should calculate all of the partitions', ->
-    prob.probs()
+    prob.calculateProbabilities()
