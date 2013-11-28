@@ -1,7 +1,8 @@
 factorial = require './factorial'
 
 ###
-Calculate binomial coefficients.  Uses Math.floor to offset javascript math errors.
+Calculate binomial coefficients.  Also known as "n choose k".
+Uses Math.floor to offset javascript math errors.
 
 @param n [Integer] The corresponding "row" in pascal's triangle
 @param k [Integer] The corresponding "column" in pascal's triangle (dependent on the row number, since it's a triangle!)
