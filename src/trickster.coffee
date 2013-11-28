@@ -43,8 +43,4 @@ createTableRow = (column1Text, column2Text, columnType = 'td') ->
   tr
 
 
-  ###
-  Trickster constructor starts here
-  ###
-
 module.exports = Trickster

@@ -251,10 +251,6 @@ createTableRow = function(column1Text, column2Text, columnType) {
   tr.appendChild(td1);
   tr.appendChild(td2);
   return tr;
-  /*
-  Trickster constructor starts here
-  */
-
 };
 
 module.exports = Trickster;
