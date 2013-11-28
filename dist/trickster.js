@@ -214,7 +214,14 @@ Creates the table and inserts it into the given element (selected by element id)
 
 Trickster = function(elementName) {
   var container, table;
+  if (!elementName) {
+    throw new Error('You must include an element name as an argument to the Trickster constructor!');
+  }
   container = document.getElementById(elementName);
+  if (!container) {
+    throw new Error("Could not find element with id = " + elementName + "!");
+  }
+  container.innerHTML = '';
   table = createProbabilitiesTable(prob.calculateProbabilities());
   container.appendChild(table);
   return this;

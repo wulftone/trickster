@@ -9,7 +9,12 @@ Creates the table and inserts it into the given element (selected by element id)
 @return [Trickster]
 ###
 Trickster = (elementName) ->
+  throw new Error 'You must include an element name as an argument to the Trickster constructor!' unless elementName
+
   container = document.getElementById elementName
+  throw new Error "Could not find element with id = #{elementName}!" unless container
+
+  container.innerHTML = ''
   table = createProbabilitiesTable prob.calculateProbabilities()
   container.appendChild table
   @
