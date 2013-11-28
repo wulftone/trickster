@@ -1,4 +1,4 @@
-factorial = require '../factorial'
+factorial = require '../src/factorial'
 assert    = require 'assert'
 
 describe 'factorial', ->

@@ -1,11 +1,8 @@
+###
+This module does the math trickster needs to operate
+###
+
 bc = require './binomial_coefficient'
-
-
-###
-Generates the UI and places it where you want it.
-###
-Trickster = (element) ->
-
 
 ###
 These are the partitions we care about for now, there should be 39 of them
@@ -84,12 +81,14 @@ probs = () ->
 
 
 # Choose which functions we want to be public
-Trickster.partitionProbability = partitionProbability
-Trickster.probs = probs
-Trickster.validPartitions = validPartitions
+Prob =
+  partitionProbability: partitionProbability
+  probs: probs
+  validPartitions: validPartitions
 
 
 if typeof exports != 'undefined'
-  module.exports = Trickster
+  module.exports = Prob
 else
-  @Trickster = Trickster
+  @Trickster ||= {}
+  @Trickster.Prob = Prob
