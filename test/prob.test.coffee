@@ -6,11 +6,11 @@ describe 'prob#partitionProbability', ->
 
 
   xit 'should calculate the probabilty of a given partition', ->
-    assert ( a = prob.partitionProbability( 5, 3, 3, 2 ) ) > 0.15, "#{a} should be greater than 0.15"
+    assert ( a = prob.partitionProbability([5, 3, 3, 2]) ) > 0.15, "#{a} should be greater than 0.15"
 
 
   it 'should cache partitions we have previously calculated', ->
-    prob.partitionProbability( 5, 3, 3, 2 )
+    prob.partitionProbability [5, 3, 3, 2]
     assert prob.validPartitions['5,3,3,2']
 
 

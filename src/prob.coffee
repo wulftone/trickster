@@ -1,8 +1,9 @@
 ###
-This module does the math trickster needs to operate
+This module does the bridge-specific math trickster requires
 ###
 
 bc = require './binomial_coefficient.coffee'
+mc = require './multinomial_coefficient.coffee'
 
 ###
 These are the partitions we care about for now, there should be 39 of them
@@ -50,57 +51,46 @@ validPartitions =
 
 
 ###
-Utility function to detect presence of an Array
+Just verifies that the hand size is 13.  Throws an error if it is not.
+
+@param handArr [Array] The hand, (e.g. [5, 3, 3, 2])
 ###
-isArray = (obj) ->
-    Object.prototype.toString.call(obj) == '[object Array]'
+verifyHandSize = (handArr) ->
+  handSize = handArr.reduce (a, b) ->
+    a + b
+
+  throw new Error 'Hand size must be 13 cards!' unless handSize == 13
 
 
 ###
 Calculate the partition probability
 
-@param arguments [Integer, Array]
+@param hand [String] e.g. "5,3,3,2"
+
 @return [Decimal]
 ###
-partitionProbability = () ->
-  if isArray arguments[0]
-    hand = arguments[0]
-  else
-    hand = Array.prototype.slice.call arguments
-
-  key = hand.toString()
-
-  throw new Error 'Not a valid partition!' unless validPartitions.hasOwnProperty key
-
-  verifyHandSize hand
+partitionProbability = (hand) ->
+  throw new Error 'Not a valid partition!' unless validPartitions.hasOwnProperty hand
 
   # Don't re-calculate unless we have to
-  return validPartitions[key] if validPartitions[key]
+  return validPartitions[hand] if validPartitions[hand]
+
   handSize = 13
   deckSize = 52
 
   denominator = bc deckSize, handSize
 
-  numerator = hand.map (e) ->
+  handArr = eval "[#{hand}]"
+  verifyHandSize handArr
+
+  numerator = handArr.map (e) ->
     bc handSize, e
 
   .reduce (a, b) ->
     a * b
 
-  validPartitions[key] = numerator / denominator
-
-
-###
-Just verifies that the hand size is 13.  Throws an error if it is not.
-
-@param hand [Array] The hand, (e.g. [5, 3, 3, 2])
-###
-verifyHandSize = (hand) ->
-  handSize = hand.reduce (a, b) ->
-    a + b
-
-  throw new Error 'Hand size must be 13 cards!' unless handSize == 13
-
+  multinomial = mc handArr
+  validPartitions[hand] = multinomial * numerator / denominator
 
 
 ###
@@ -108,9 +98,7 @@ Calculate all the probabilities for the valid partitions
 ###
 calculateProbabilities = () ->
   for partition, value of validPartitions
-    hand = eval "[#{partition}]"
-    verifyHandSize hand
-    partitionProbability hand
+    partitionProbability partition
 
   validPartitions
 

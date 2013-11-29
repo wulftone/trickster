@@ -1,4 +1,4 @@
-prob = require './prob.coffee'
+prob = require './src/prob.coffee'
 
 
 ###
@@ -20,10 +20,15 @@ Trickster = (elementName) ->
   @
 
 
+makeItSortable = (table) ->
+  tr = table.children[0]
+  console.log tr
+
+
 ###
 Creates a two-column table based on the given object.
 
-@param probabilities [Object] e.g. {"5,3,3,2": 0.15, ...}
+@param probabilities [Object, Array<Array>] e.g. {"5,3,3,2": 0.15, ...}, or [["5,3,3,2", 0.15], ...]
 
 @return [DOMElement] The table element
 ###
@@ -34,6 +39,8 @@ createProbabilitiesTable = (probabilities) ->
     p[partition] = Math.floor(10000 * probability) / 100 # Floored to two decmials
 
   table = createTable ['Partition', 'Probability (%)'], p
+  makeItSortable table
+  table
 
 
 ###
