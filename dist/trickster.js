@@ -1,217 +1,4 @@
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.Trickster=e():"undefined"!=typeof global?global.Trickster=e():"undefined"!=typeof self&&(self.Trickster=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Trickster, createTable, createTableRow, getProbs, numberToPercent, objToArr, prob;
-
-prob = require('./src/prob.coffee');
-
-Trickster = (function() {
-  /*
-  Creates the table and inserts it into the given element (selected by element id)
-  
-  @param elementName [String] The id of the Trickster container
-  
-  @return [Trickster]
-  */
-
-  function Trickster(elementName) {
-    if (!elementName) {
-      throw new Error('You must include an element name as an argument to the Trickster constructor!');
-    }
-    this.container = document.getElementById(elementName);
-    if (!this.container) {
-      throw new Error("Could not find element with id = " + elementName + "!");
-    }
-    this.probs = getProbs().sortByPartition();
-    this.render();
-    this;
-  }
-
-  Trickster.prototype.render = function() {
-    this.container.innerHTML = '';
-    this.table = this.createProbabilitiesTable(this.probs);
-    return this.container.appendChild(this.table);
-  };
-
-  Trickster.prototype.reRender = function() {
-    this.dispose();
-    return this.render();
-  };
-
-  Trickster.prototype.dispose = function() {
-    return this.container.removeChild(this.table);
-  };
-
-  /*
-  Add events to the headers that sort the table by the data in each header's column
-  
-  @param table [DOMElement] The table we're making sortable
-  
-  @return [DOMElement]
-  */
-
-
-  Trickster.prototype.makeItSortable = function(table) {
-    var tr,
-      _this = this;
-    tr = table.children[0];
-    tr.children[0].onclick = function(e) {
-      _this.probs.sortByPartition();
-      return _this.reRender();
-    };
-    return tr.children[1].onclick = function(e) {
-      _this.probs.sortByProbabilty();
-      return _this.reRender();
-    };
-  };
-
-  /*
-  Creates a two-column table based on the given Array.
-  
-  @param probabilities [Array<Array>] e.g. [["5,3,3,2", 0.15], ...]
-  
-  @return [DOMElement] The table element
-  */
-
-
-  Trickster.prototype.createProbabilitiesTable = function(probabilities) {
-    var p, table;
-    p = probabilities.map(function(el) {
-      return [el[0].toString().replace(/,/g, '-'), numberToPercent(el[1])];
-    });
-    p.sortedBy = 'probability decreasing';
-    table = createTable(['Partition', 'Probability (%)'], p);
-    this.makeItSortable(table);
-    return table;
-  };
-
-  return Trickster;
-
-})();
-
-/*
-Turn an object into an Array of Arrays
-
-@param obj [Object]
-
-@return [Array<Array>]
-*/
-
-
-objToArr = function(obj) {
-  var arr, k, v;
-  arr = [];
-  for (k in obj) {
-    v = obj[k];
-    arr.push([k, v]);
-  }
-  return arr;
-};
-
-numberToPercent = function(n) {
-  var x;
-  x = (100 * n).toPrecision(4);
-  if (x < 0.1) {
-    return parseFloat(x).toExponential();
-  } else {
-    return x;
-  }
-};
-
-/*
-Creates a two-column table.
-
-@param headers [Array<String>] An Array that contains two strings to be used as column titles in the table
-@param rows [Object] A basic Object whose keys will be the first column, and values the second column in the table
-
-@return [DOMElement] The table element
-*/
-
-
-createTable = function(headers, rows) {
-  var headerRow, table;
-  table = document.createElement('table');
-  headerRow = createTableRow(headers[0], headers[1], 'th');
-  table.appendChild(headerRow);
-  rows.forEach(function(row) {
-    var tr;
-    tr = createTableRow(row[0], row[1]);
-    return table.appendChild(tr);
-  });
-  return table;
-};
-
-/*
-Creates a two-column `tr` element with the given contents.
-
-@param column1Text [String] The text to enter into the leftmost column
-@param column2Text [String] The text to enter into the rightmost column
-@param columnType  [String] (default: 'td') The type of column (e.g. `th` or `td`)
-*/
-
-
-createTableRow = function(column1Text, column2Text, columnType) {
-  var td1, td2, tr;
-  if (columnType == null) {
-    columnType = 'td';
-  }
-  tr = document.createElement('tr');
-  td1 = document.createElement(columnType);
-  td2 = document.createElement(columnType);
-  td1.textContent = column1Text;
-  td2.textContent = column2Text;
-  tr.appendChild(td1);
-  tr.appendChild(td2);
-  return tr;
-};
-
-getProbs = function() {
-  var arr, p;
-  arr = objToArr(prob.calculateProbabilities());
-  p = arr.map(function(e) {
-    return [prob.padArr(eval("[" + e[0] + "]"), 4), e[1]];
-  });
-  p.sortByPartition = function() {
-    var weightedReduction;
-    weightedReduction = function(e) {
-      return e[0] * 1000 + e[1] * 100 + e[2] * 10 + e[3];
-    };
-    if (this.sortedBy === 'partition decreasing') {
-      this.sortedBy = 'partition increasing';
-      return this.sort(function(a, b) {
-        var x, y;
-        x = a.reduce(weightedReduction);
-        y = b.reduce(weightedReduction);
-        return x - y;
-      });
-    } else {
-      this.sortedBy = 'partition decreasing';
-      return this.sort(function(a, b) {
-        var x, y;
-        x = a.reduce(weightedReduction);
-        y = b.reduce(weightedReduction);
-        return y - x;
-      });
-    }
-  };
-  p.sortByProbabilty = function() {
-    if (this.sortedBy === 'probability decreasing') {
-      this.sortedBy = 'probability increasing';
-      return this.sort(function(a, b) {
-        return a[1] - b[1];
-      });
-    } else {
-      this.sortedBy = 'probability decreasing';
-      return this.sort(function(a, b) {
-        return b[1] - a[1];
-      });
-    }
-  };
-  return p;
-};
-
-module.exports = Trickster;
-
-
-},{"./src/prob.coffee":5}],2:[function(require,module,exports){
 var binomialCoefficient, factorial;
 
 factorial = require('./factorial.coffee');
@@ -237,7 +24,7 @@ binomialCoefficient = function(n, k) {
 module.exports = binomialCoefficient;
 
 
-},{"./factorial.coffee":3}],3:[function(require,module,exports){
+},{"./factorial.coffee":2}],2:[function(require,module,exports){
 /*
 Recursive factorial function with cache
 
@@ -270,7 +57,7 @@ factorial.memo = memo;
 module.exports = factorial;
 
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var factorial, multinomialCoefficient,
   __hasProp = {}.hasOwnProperty;
 
@@ -335,7 +122,7 @@ multinomialCoefficient.count = function(arr) {
 module.exports = multinomialCoefficient;
 
 
-},{"./factorial.coffee":3}],5:[function(require,module,exports){
+},{"./factorial.coffee":2}],4:[function(require,module,exports){
 /*
 This module does the bridge-specific math trickster requires
 */
@@ -485,7 +272,230 @@ Prob = {
 module.exports = Prob;
 
 
-},{"./binomial_coefficient.coffee":2,"./multinomial_coefficient.coffee":4}]},{},[1])
-(1)
+},{"./binomial_coefficient.coffee":1,"./multinomial_coefficient.coffee":3}],5:[function(require,module,exports){
+var Trickster, createTable, createTableRow, generateProbabilities, numberToPercent, objToArr, prob;
+
+prob = require('./prob.coffee');
+
+Trickster = (function() {
+  /*
+  Creates the table and inserts it into the given element (selected by element id)
+  
+  @param elementName [String] The id of the Trickster container
+  
+  @return [Trickster]
+  */
+
+  function Trickster(elementName) {
+    if (!elementName) {
+      throw new Error('You must include an element name as an argument to the Trickster constructor!');
+    }
+    this.container = document.getElementById(elementName);
+    if (!this.container) {
+      throw new Error("Could not find element with id = " + elementName + "!");
+    }
+    this.probs = generateProbabilities().sortByPartition();
+    this.render();
+    this;
+  }
+
+  Trickster.prototype.render = function() {
+    this.container.innerHTML = '';
+    this.table = this.createProbabilitiesTable(this.probs);
+    return this.container.appendChild(this.table);
+  };
+
+  Trickster.prototype.reRender = function() {
+    this.dispose();
+    return this.render();
+  };
+
+  Trickster.prototype.dispose = function() {
+    return this.container.removeChild(this.table);
+  };
+
+  /*
+  Add events to the headers that sort the table by the data in each header's column
+  
+  @param table [DOMElement] The table we're making sortable
+  
+  @return [DOMElement]
+  */
+
+
+  Trickster.prototype.makeItSortable = function(table) {
+    var tr,
+      _this = this;
+    tr = table.children[0];
+    tr.children[0].onclick = function(e) {
+      _this.probs.sortByPartition();
+      return _this.reRender();
+    };
+    return tr.children[1].onclick = function(e) {
+      _this.probs.sortByProbabilty();
+      return _this.reRender();
+    };
+  };
+
+  /*
+  Creates a two-column table based on the given Array.
+  
+  @param probabilities [Array<Array>] e.g. [["5,3,3,2", 0.15], ...]
+  
+  @return [DOMElement] The table element
+  */
+
+
+  Trickster.prototype.createProbabilitiesTable = function(probabilities) {
+    var p, table;
+    p = probabilities.map(function(el) {
+      return [el[0].toString().replace(/,/g, '-'), numberToPercent(el[1])];
+    });
+    p.sortedBy = 'probability decreasing';
+    table = createTable(['Partition', 'Probability (%)'], p);
+    this.makeItSortable(table);
+    return table;
+  };
+
+  return Trickster;
+
+})();
+
+/*
+Turn an object into an Array of Arrays
+
+@param obj [Object]
+
+@return [Array<Array>]
+*/
+
+
+objToArr = function(obj) {
+  var arr, k, v;
+  arr = [];
+  for (k in obj) {
+    v = obj[k];
+    arr.push([k, v]);
+  }
+  return arr;
+};
+
+numberToPercent = function(n) {
+  var x;
+  x = (100 * n).toPrecision(4);
+  if (x < 0.1) {
+    return parseFloat(x).toExponential();
+  } else {
+    return x;
+  }
+};
+
+/*
+Creates a two-column table.
+
+@param headers [Array<String>] An Array that contains two strings to be used as column titles in the table
+@param rows [Object] A basic Object whose keys will be the first column, and values the second column in the table
+
+@return [DOMElement] The table element
+*/
+
+
+createTable = function(headers, rows) {
+  var headerRow, table;
+  table = document.createElement('table');
+  headerRow = createTableRow(headers[0], headers[1], 'th');
+  table.appendChild(headerRow);
+  rows.forEach(function(row) {
+    var tr;
+    tr = createTableRow(row[0], row[1]);
+    return table.appendChild(tr);
+  });
+  return table;
+};
+
+/*
+Creates a two-column `tr` element with the given contents.
+
+@param column1Text [String] The text to enter into the leftmost column
+@param column2Text [String] The text to enter into the rightmost column
+@param columnType  [String] (default: 'td') The type of column (e.g. `th` or `td`)
+*/
+
+
+createTableRow = function(column1Text, column2Text, columnType) {
+  var td1, td2, tr;
+  if (columnType == null) {
+    columnType = 'td';
+  }
+  tr = document.createElement('tr');
+  td1 = document.createElement(columnType);
+  td2 = document.createElement(columnType);
+  td1.textContent = column1Text;
+  td2.textContent = column2Text;
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  return tr;
+};
+
+/*
+Creates an Array with embedded Arrays of Arrays of Integers and a Float.  Yeah.
+This is because Arrays are sortable, as we will need to do later.  It was easier than
+creating my own custom Sortable class because Arrays come with lots of neat
+functions like sort, map, and reduce already.
+
+@return [Array <Array <Array <Integer>>, <Float>>] e.g. [ [ [5,3,3,2], 0.15], ... ]
+*/
+
+
+generateProbabilities = function() {
+  var arr, p;
+  arr = objToArr(prob.calculateProbabilities());
+  p = arr.map(function(e) {
+    return [prob.padArr(eval("[" + e[0] + "]"), 4), e[1]];
+  });
+  p.sortByPartition = function() {
+    var weightedReduction;
+    weightedReduction = function(e) {
+      return e[0] * 1000 + e[1] * 100 + e[2] * 10 + e[3];
+    };
+    if (this.sortedBy === 'partition decreasing') {
+      this.sortedBy = 'partition increasing';
+      return this.sort(function(a, b) {
+        var x, y;
+        x = a.reduce(weightedReduction);
+        y = b.reduce(weightedReduction);
+        return x - y;
+      });
+    } else {
+      this.sortedBy = 'partition decreasing';
+      return this.sort(function(a, b) {
+        var x, y;
+        x = a.reduce(weightedReduction);
+        y = b.reduce(weightedReduction);
+        return y - x;
+      });
+    }
+  };
+  p.sortByProbabilty = function() {
+    if (this.sortedBy === 'probability decreasing') {
+      this.sortedBy = 'probability increasing';
+      return this.sort(function(a, b) {
+        return a[1] - b[1];
+      });
+    } else {
+      this.sortedBy = 'probability decreasing';
+      return this.sort(function(a, b) {
+        return b[1] - a[1];
+      });
+    }
+  };
+  return p;
+};
+
+module.exports = Trickster;
+
+
+},{"./prob.coffee":4}]},{},[5])
+(5)
 });
 ;

@@ -1,4 +1,4 @@
-prob = require './src/prob.coffee'
+prob = require './prob.coffee'
 
 
 class Trickster
@@ -17,7 +17,7 @@ class Trickster
     @container = document.getElementById elementName
     throw new Error "Could not find element with id = #{elementName}!" unless @container
 
-    @probs = getProbs().sortByPartition()
+    @probs = generateProbabilities().sortByPartition()
 
     @render()
     @
@@ -138,7 +138,15 @@ createTableRow = (column1Text, column2Text, columnType = 'td') ->
   tr
 
 
-getProbs = ->
+###
+Creates an Array with embedded Arrays of Arrays of Integers and a Float.  Yeah.
+This is because Arrays are sortable, as we will need to do later.  It was easier than
+creating my own custom Sortable class because Arrays come with lots of neat
+functions like sort, map, and reduce already.
+
+@return [Array <Array <Array <Integer>>, <Float>>] e.g. [ [ [5,3,3,2], 0.15], ... ]
+###
+generateProbabilities = ->
   arr = objToArr prob.calculateProbabilities()
 
   p = arr.map (e) ->

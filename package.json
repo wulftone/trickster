@@ -1,8 +1,8 @@
 {
-  "name": "bridge_calculator",
+  "name": "trickster",
   "version": "0.0.1",
   "description": "Functions to calculate bridge junk",
-  "homepage": "http://wulftone.github.io/bridge_calculator",
+  "homepage": "http://wulftone.github.io/trickster",
   "author": "Trevor Bortins <trevor.bortins@gmail.com> (http://wulftone.com/)",
   "contributors": [
     "John Bortins <john.bortins@gmail.com> (http://jourdansbridge.com/)"
@@ -12,16 +12,16 @@
     "cards",
     "calculator"
   ],
-  "main": "./bridge_calculator.js",
+  "main": "./src/trickster.js",
   "engines": {
     "node": "*"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wulftone/bridge_calculator.git"
+    "url": "https://github.com/wulftone/trickster.git"
   },
   "bugs": {
-    "url": "https://github.com/wulftone/bridge_calculator/issues"
+    "url": "https://github.com/wulftone/trickster/issues"
   },
   "licenses": [
     {
