@@ -172,7 +172,7 @@ getProbs = function() {
   p.sortByPartition = function() {
     var weightedReduction;
     weightedReduction = function(e) {
-      return e[0] * 13 ^ 3 + e[1] * 13 ^ 2 + e[2] * 13 + e[3];
+      return e[0] * 1000 + e[1] * 100 + e[2] * 10 + e[3];
     };
     if (this.sortedBy === 'partition decreasing') {
       this.sortedBy = 'partition increasing';

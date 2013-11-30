@@ -146,9 +146,9 @@ getProbs = ->
 
   p.sortByPartition = ->
     weightedReduction = (e) ->
-      e[0] * 13^3 +
-      e[1] * 13^2 +
-      e[2] * 13 +
+      e[0] * 1000 +
+      e[1] * 100 +
+      e[2] * 10 +
       e[3]
 
     if @sortedBy == 'partition decreasing'
