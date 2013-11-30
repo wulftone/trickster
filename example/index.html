@@ -17,6 +17,10 @@
   td {
     padding: 0 12px;
   }
+
+  th {
+    cursor: pointer;
+  }
 </style>
 
 <div id='tabs'>
@@ -34,6 +38,6 @@
 <script type='text/javascript' src="../dist/trickster.js"></script>
 
 <script type='text/javascript'>
-  var t = new Trickster('shapes');
+  window.t = new Trickster('shapes');
   tabs = $('#tabs').tabs();
 </script>

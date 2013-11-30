@@ -1,24 +1,78 @@
 prob = require './src/prob.coffee'
 
 
-###
-Creates the table and inserts it into the given element (selected by element id)
+class Trickster
 
-@param elementName [String] The id of the Trickster container
 
-@return [Trickster]
-###
-Trickster = (elementName) ->
-  throw new Error 'You must include an element name as an argument to the Trickster constructor!' unless elementName
+  ###
+  Creates the table and inserts it into the given element (selected by element id)
 
-  container = document.getElementById elementName
-  throw new Error "Could not find element with id = #{elementName}!" unless container
+  @param elementName [String] The id of the Trickster container
 
-  container.innerHTML = ''
-  probs = objToArr prob.calculateProbabilities()
-  table = createProbabilitiesTable probs
-  container.appendChild table
-  @
+  @return [Trickster]
+  ###
+  constructor: (elementName) ->
+    throw new Error 'You must include an element name as an argument to the Trickster constructor!' unless elementName
+
+    @container = document.getElementById elementName
+    throw new Error "Could not find element with id = #{elementName}!" unless @container
+
+    @probs = getProbs().sortByPartition()
+
+    @render()
+    @
+
+
+  render: ->
+    @container.innerHTML = ''
+    @table = @createProbabilitiesTable @probs
+    @container.appendChild @table
+
+
+  reRender: ->
+    @dispose()
+    @render()
+
+
+  dispose: ->
+    @container.removeChild @table
+
+
+  ###
+  Add events to the headers that sort the table by the data in each header's column
+
+  @param table [DOMElement] The table we're making sortable
+
+  @return [DOMElement]
+  ###
+  makeItSortable: (table) ->
+    tr = table.children[0]
+
+    tr.children[0].onclick = (e) =>
+      @probs.sortByPartition()
+      @reRender()
+
+    tr.children[1].onclick = (e) =>
+      @probs.sortByProbabilty()
+      @reRender()
+
+
+  ###
+  Creates a two-column table based on the given Array.
+
+  @param probabilities [Array<Array>] e.g. [["5,3,3,2", 0.15], ...]
+
+  @return [DOMElement] The table element
+  ###
+  createProbabilitiesTable: (probabilities) ->
+    p = probabilities.map (el) ->
+      [el[0], numberToPercent el[1]]
+
+    p.sortedBy = 'probability decreasing'
+
+    table = createTable ['Partition', 'Probability (%)'], p
+    @makeItSortable table
+    table
 
 
 ###
@@ -35,37 +89,6 @@ objToArr = (obj) ->
     arr.push [k,v]
 
   arr
-
-
-###
-Add events to the headers that sort the table by the data in each header's column
-
-@param table [DOMElement] The table we're making sortable
-
-@return [DOMElement]
-###
-makeItSortable = (table) ->
-  tr = table.children[0]
-  console.log tr
-
-
-###
-Creates a two-column table based on the given object.
-
-@param probabilities [Object, Array<Array>] e.g. {"5,3,3,2": 0.15, ...}, or [["5,3,3,2", 0.15], ...]
-
-@return [DOMElement] The table element
-###
-createProbabilitiesTable = (probabilities) ->
-  probabilities.sort (a, b) ->
-    b[1] - a[1]
-
-  p = probabilities.map (el) ->
-    [el[0], numberToPercent el[1]]
-
-  table = createTable ['Partition', 'Probability (%)'], p
-  makeItSortable table
-  table
 
 
 numberToPercent = (n) ->
@@ -113,6 +136,53 @@ createTableRow = (column1Text, column2Text, columnType = 'td') ->
   tr.appendChild td1
   tr.appendChild td2
   tr
+
+
+getProbs = ->
+  arr = objToArr prob.calculateProbabilities()
+
+  p = arr.map (e) ->
+    [prob.padArr(eval("[#{e[0]}]"), 4), e[1]]
+
+  p.sortByPartition = ->
+    weightedReduction = (e) ->
+      e[0] * 1000 +
+      e[1] * 100 +
+      e[2] * 10 +
+      e[3]
+
+    if @sortedBy == 'partition decreasing'
+      @sortedBy = 'partition increasing'
+
+      @sort (a, b) ->
+        x = a.reduce weightedReduction
+        y = b.reduce weightedReduction
+        x - y
+
+    else
+      @sortedBy = 'partition decreasing'
+
+      @sort (a, b) ->
+        x = a.reduce weightedReduction
+        y = b.reduce weightedReduction
+        y - x
+
+
+  p.sortByProbabilty = ->
+    if @sortedBy == 'probability decreasing'
+      @sortedBy = 'probability increasing'
+
+      @sort (a, b) ->
+        a[1] - b[1]
+
+    else
+      @sortedBy = 'probability decreasing'
+
+      @sort (a, b) ->
+        b[1] - a[1]
+
+  p
+
 
 
 module.exports = Trickster
