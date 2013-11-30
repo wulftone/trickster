@@ -1,5 +1,5 @@
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.Trickster=e():"undefined"!=typeof global?global.Trickster=e():"undefined"!=typeof self&&(self.Trickster=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Trickster, createProbabilitiesTable, createTable, createTableRow, makeItSortable, prob;
+var Trickster, createProbabilitiesTable, createTable, createTableRow, makeItSortable, numberToPercent, objToArr, prob;
 
 prob = require('./src/prob.coffee');
 
@@ -13,7 +13,7 @@ Creates the table and inserts it into the given element (selected by element id)
 
 
 Trickster = function(elementName) {
-  var container, table;
+  var container, probs, table;
   if (!elementName) {
     throw new Error('You must include an element name as an argument to the Trickster constructor!');
   }
@@ -22,10 +22,39 @@ Trickster = function(elementName) {
     throw new Error("Could not find element with id = " + elementName + "!");
   }
   container.innerHTML = '';
-  table = createProbabilitiesTable(prob.calculateProbabilities());
+  probs = objToArr(prob.calculateProbabilities());
+  table = createProbabilitiesTable(probs);
   container.appendChild(table);
   return this;
 };
+
+/*
+Turn an object into an Array of Arrays
+
+@param obj [Object]
+
+@return [Array<Array>]
+*/
+
+
+objToArr = function(obj) {
+  var arr, k, v;
+  arr = [];
+  for (k in obj) {
+    v = obj[k];
+    arr.push([k, v]);
+  }
+  return arr;
+};
+
+/*
+Add events to the headers that sort the table by the data in each header's column
+
+@param table [DOMElement] The table we're making sortable
+
+@return [DOMElement]
+*/
+
 
 makeItSortable = function(table) {
   var tr;
@@ -43,15 +72,26 @@ Creates a two-column table based on the given object.
 
 
 createProbabilitiesTable = function(probabilities) {
-  var p, partition, probability, table;
-  p = {};
-  for (partition in probabilities) {
-    probability = probabilities[partition];
-    p[partition] = Math.floor(10000 * probability) / 100;
-  }
+  var p, table;
+  probabilities.sort(function(a, b) {
+    return b[1] - a[1];
+  });
+  p = probabilities.map(function(el) {
+    return [el[0], numberToPercent(el[1])];
+  });
   table = createTable(['Partition', 'Probability (%)'], p);
   makeItSortable(table);
   return table;
+};
+
+numberToPercent = function(n) {
+  var x;
+  x = (100 * n).toPrecision(4);
+  if (x < 0.1) {
+    return parseFloat(x).toExponential();
+  } else {
+    return x;
+  }
 };
 
 /*
@@ -65,15 +105,15 @@ Creates a two-column table.
 
 
 createTable = function(headers, rows) {
-  var headerRow, k, table, tr, v;
+  var headerRow, table;
   table = document.createElement('table');
   headerRow = createTableRow(headers[0], headers[1], 'th');
   table.appendChild(headerRow);
-  for (k in rows) {
-    v = rows[k];
-    tr = createTableRow(k, v);
-    table.appendChild(tr);
-  }
+  rows.forEach(function(row) {
+    var tr;
+    tr = createTableRow(row[0], row[1]);
+    return table.appendChild(tr);
+  });
   return table;
 };
 

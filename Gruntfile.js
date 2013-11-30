@@ -15,17 +15,17 @@ module.exports = function(grunt) {
           growl: true,
           require: 'coffee-script'
         },
-        src: ['test/**/*.js','test/**/*.coffee']
+        src: ['test/**/*.js', 'test/**/*.coffee']
       }
     },
 
     watch: {
       scripts: {
-        files: ['src/**/*.coffee','test/**/*.coffee'],
+        files: ['index.coffee', 'src/**/*.coffee', 'test/**/*.coffee'],
         tasks: ['mochaTest', 'browserify'],
       },
       example: {
-        files: ['dist/*.js','example/*.html','Gruntfile.js'],
+        files: ['dist/*.js', 'example/*.html', 'Gruntfile.js'],
         options: {
           livereload: true
         }

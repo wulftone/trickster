@@ -15,11 +15,35 @@ Trickster = (elementName) ->
   throw new Error "Could not find element with id = #{elementName}!" unless container
 
   container.innerHTML = ''
-  table = createProbabilitiesTable prob.calculateProbabilities()
+  probs = objToArr prob.calculateProbabilities()
+  table = createProbabilitiesTable probs
   container.appendChild table
   @
 
 
+###
+Turn an object into an Array of Arrays
+
+@param obj [Object]
+
+@return [Array<Array>]
+###
+objToArr = (obj) ->
+  arr = []
+
+  for k, v of obj
+    arr.push [k,v]
+
+  arr
+
+
+###
+Add events to the headers that sort the table by the data in each header's column
+
+@param table [DOMElement] The table we're making sortable
+
+@return [DOMElement]
+###
 makeItSortable = (table) ->
   tr = table.children[0]
   console.log tr
@@ -33,14 +57,24 @@ Creates a two-column table based on the given object.
 @return [DOMElement] The table element
 ###
 createProbabilitiesTable = (probabilities) ->
-  p = {}
+  probabilities.sort (a, b) ->
+    b[1] - a[1]
 
-  for partition, probability of probabilities
-    p[partition] = Math.floor(10000 * probability) / 100 # Floored to two decmials
+  p = probabilities.map (el) ->
+    [el[0], numberToPercent el[1]]
 
   table = createTable ['Partition', 'Probability (%)'], p
   makeItSortable table
   table
+
+
+numberToPercent = (n) ->
+  x = (100 * n).toPrecision(4)
+
+  if x < 0.1
+    parseFloat(x).toExponential()
+  else
+    x
 
 
 ###
@@ -56,8 +90,8 @@ createTable = (headers, rows) ->
   headerRow = createTableRow headers[0], headers[1], 'th'
   table.appendChild headerRow
 
-  for k, v of rows
-    tr = createTableRow k, v
+  rows.forEach (row) ->
+    tr = createTableRow row[0], row[1]
     table.appendChild tr
 
   table
