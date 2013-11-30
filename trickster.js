@@ -75,7 +75,7 @@ Trickster = (function() {
   Trickster.prototype.createProbabilitiesTable = function(probabilities) {
     var p, table;
     p = probabilities.map(function(el) {
-      return [el[0], numberToPercent(el[1])];
+      return [el[0].toString().replace(/,/g, '-'), numberToPercent(el[1])];
     });
     p.sortedBy = 'probability decreasing';
     table = createTable(['Partition', 'Probability (%)'], p);
