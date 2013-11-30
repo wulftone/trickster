@@ -104,7 +104,7 @@ createTableRow = function(column1Text, column2Text, columnType) {
 module.exports = Trickster;
 
 
-},{"./src/prob.coffee":4}],2:[function(require,module,exports){
+},{"./src/prob.coffee":5}],2:[function(require,module,exports){
 var binomialCoefficient, factorial;
 
 factorial = require('./factorial.coffee');
@@ -164,13 +164,80 @@ module.exports = factorial;
 
 
 },{}],4:[function(require,module,exports){
+var factorial, multinomialCoefficient,
+  __hasProp = {}.hasOwnProperty;
+
+factorial = require('./factorial.coffee');
+
+/*
+Calculate the multinomial coefficient of a given set of Integers
+
+@param arr [Array<Integer>]
+
+@return [Decimal]
+*/
+
+
+multinomialCoefficient = function(arr) {
+  var counts, denominator, numerator;
+  counts = multinomialCoefficient.count(arr);
+  numerator = factorial(counts.reduce(function(a, b) {
+    return a + b;
+  }));
+  denominator = counts.map(function(e) {
+    return factorial(e);
+  }).reduce(function(a, b) {
+    return a * b;
+  });
+  return numerator / denominator;
+};
+
+/*
+Count the number of occurrences of an element in an array.
+
+NOTE: This function only returns an Array of counts, with
+      no "key: value" to determine which count goes with
+      which value.  This is by design, since here we don't
+      care about that.
+
+@param arr [Array<Integer>]
+
+@return [Array]
+*/
+
+
+multinomialCoefficient.count = function(arr) {
+  var counts, k, obj, v;
+  obj = {};
+  arr.forEach(function(e) {
+    if (obj[e]) {
+      return obj[e]++;
+    } else {
+      return obj[e] = 1;
+    }
+  });
+  counts = [];
+  for (k in obj) {
+    if (!__hasProp.call(obj, k)) continue;
+    v = obj[k];
+    counts.push(v);
+  }
+  return counts;
+};
+
+module.exports = multinomialCoefficient;
+
+
+},{"./factorial.coffee":3}],5:[function(require,module,exports){
 /*
 This module does the bridge-specific math trickster requires
 */
 
-var Prob, bc, calculateProbabilities, partitionProbability, validPartitions, verifyHandSize;
+var Prob, bc, calculateProbabilities, mc, partitionProbability, validPartitions, verifyHandSize;
 
 bc = require('./binomial_coefficient.coffee');
+
+mc = require('./multinomial_coefficient.coffee');
 
 /*
 These are the partitions we care about for now, there should be 39 of them
@@ -246,7 +313,7 @@ Calculate the partition probability
 
 
 partitionProbability = function(hand) {
-  var deckSize, denominator, handArr, handSize, numerator;
+  var deckSize, denominator, handArr, handSize, multinomial, numerator;
   if (!validPartitions.hasOwnProperty(hand)) {
     throw new Error('Not a valid partition!');
   }
@@ -263,7 +330,8 @@ partitionProbability = function(hand) {
   }).reduce(function(a, b) {
     return a * b;
   });
-  return validPartitions[hand] = numerator / denominator;
+  multinomial = mc(handArr);
+  return validPartitions[hand] = multinomial * numerator / denominator;
 };
 
 /*
@@ -289,7 +357,7 @@ Prob = {
 module.exports = Prob;
 
 
-},{"./binomial_coefficient.coffee":2}]},{},[1])
+},{"./binomial_coefficient.coffee":2,"./multinomial_coefficient.coffee":4}]},{},[1])
 (1)
 });
 ;

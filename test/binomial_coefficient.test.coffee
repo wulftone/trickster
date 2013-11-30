@@ -1,5 +1,5 @@
-bc = require '../src/binomial_coefficient'
-assert    = require 'assert'
+bc     = require '../src/binomial_coefficient'
+assert = require 'assert'
 
 
 describe 'binomial_coefficient', ->
