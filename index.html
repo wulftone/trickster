@@ -1,0 +1,43 @@
+<style>
+  #tabs {
+    width: 250px;
+    margin: 0 auto;
+    font-size: 10px
+  }
+
+  #shapes {
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  td {
+    padding: 0 12px;
+  }
+
+  th {
+    cursor: pointer;
+  }
+</style>
+
+<div id='tabs'>
+  <ul>
+    <li><a href='#shapes'>Shapes</a></li>
+  </ul>
+
+  <div id='shapes'></div>
+</div>
+
+<link rel='stylesheet' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css' />
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script type='text/javascript' src="trickster.js"></script>
+
+<script type='text/javascript'>
+  window.t = new Trickster('shapes');
+  tabs = $('#tabs').tabs();
+</script>
