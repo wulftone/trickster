@@ -233,7 +233,7 @@ module.exports = multinomialCoefficient;
 This module does the bridge-specific math trickster requires
 */
 
-var Prob, bc, calculateProbabilities, mc, partitionProbability, validPartitions, verifyHandSize;
+var Prob, bc, calculateProbabilities, mc, padArr, partitionProbability, validPartitions, verifyHandSize;
 
 bc = require('./binomial_coefficient.coffee');
 
@@ -313,7 +313,7 @@ Calculate the partition probability
 
 
 partitionProbability = function(hand) {
-  var binomialCoefficients, deckSize, denominator, handArr, handSize, multinomial;
+  var binomialCoefficients, deckSize, denominator, handArr, handSize, multinomial, paddedHandArr;
   if (!validPartitions.hasOwnProperty(hand)) {
     throw new Error('Not a valid partition!');
   }
@@ -325,13 +325,33 @@ partitionProbability = function(hand) {
   denominator = bc(deckSize, handSize);
   handArr = eval("[" + hand + "]");
   verifyHandSize(handArr);
-  binomialCoefficients = handArr.map(function(e) {
+  paddedHandArr = padArr(handArr, 4);
+  binomialCoefficients = paddedHandArr.map(function(e) {
     return bc(handSize, e);
   }).reduce(function(a, b) {
     return a * b;
   });
   multinomial = mc(handArr);
   return validPartitions[hand] = multinomial * binomialCoefficients / denominator;
+};
+
+/*
+Pad an array with zeros out to index `size - 1`
+
+@param arr  [Array]
+@param size [Integer] The desired final size of the array
+
+@return [Array]
+*/
+
+
+padArr = function(arr, size) {
+  var numPads;
+  numPads = size - arr.length;
+  while (numPads--) {
+    arr.push(0);
+  }
+  return arr;
 };
 
 /*
@@ -351,7 +371,8 @@ calculateProbabilities = function() {
 Prob = {
   partitionProbability: partitionProbability,
   calculateProbabilities: calculateProbabilities,
-  validPartitions: validPartitions
+  validPartitions: validPartitions,
+  padArr: padArr
 };
 
 module.exports = Prob;

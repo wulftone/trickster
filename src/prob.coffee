@@ -83,7 +83,9 @@ partitionProbability = (hand) ->
   handArr = eval "[#{hand}]"
   verifyHandSize handArr
 
-  binomialCoefficients = handArr.map (e) ->
+  paddedHandArr = padArr handArr, 4
+
+  binomialCoefficients = paddedHandArr.map (e) ->
     bc handSize, e
 
   .reduce (a, b) ->
@@ -91,6 +93,23 @@ partitionProbability = (hand) ->
 
   multinomial = mc handArr
   validPartitions[hand] = multinomial * binomialCoefficients / denominator
+
+
+###
+Pad an array with zeros out to index `size - 1`
+
+@param arr  [Array]
+@param size [Integer] The desired final size of the array
+
+@return [Array]
+###
+padArr = (arr, size) ->
+  numPads = size - arr.length
+
+  while numPads--
+    arr.push 0
+
+  arr
 
 
 ###
@@ -108,6 +127,7 @@ Prob =
   partitionProbability: partitionProbability
   calculateProbabilities: calculateProbabilities
   validPartitions: validPartitions
+  padArr: padArr
 
 
 module.exports = Prob
