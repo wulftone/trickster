@@ -83,14 +83,14 @@ partitionProbability = (hand) ->
   handArr = eval "[#{hand}]"
   verifyHandSize handArr
 
-  numerator = handArr.map (e) ->
+  binomialCoefficients = handArr.map (e) ->
     bc handSize, e
 
   .reduce (a, b) ->
     a * b
 
   multinomial = mc handArr
-  validPartitions[hand] = multinomial * numerator / denominator
+  validPartitions[hand] = multinomial * binomialCoefficients / denominator
 
 
 ###

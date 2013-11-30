@@ -313,7 +313,7 @@ Calculate the partition probability
 
 
 partitionProbability = function(hand) {
-  var deckSize, denominator, handArr, handSize, multinomial, numerator;
+  var binomialCoefficients, deckSize, denominator, handArr, handSize, multinomial;
   if (!validPartitions.hasOwnProperty(hand)) {
     throw new Error('Not a valid partition!');
   }
@@ -325,13 +325,13 @@ partitionProbability = function(hand) {
   denominator = bc(deckSize, handSize);
   handArr = eval("[" + hand + "]");
   verifyHandSize(handArr);
-  numerator = handArr.map(function(e) {
+  binomialCoefficients = handArr.map(function(e) {
     return bc(handSize, e);
   }).reduce(function(a, b) {
     return a * b;
   });
   multinomial = mc(handArr);
-  return validPartitions[hand] = multinomial * numerator / denominator;
+  return validPartitions[hand] = multinomial * binomialCoefficients / denominator;
 };
 
 /*
