@@ -12,7 +12,7 @@
     "cards",
     "calculator"
   ],
-  "main": "./src/trickster.js",
+  "main": "./src/trickster.coffee",
   "engines": {
     "node": "*"
   },
